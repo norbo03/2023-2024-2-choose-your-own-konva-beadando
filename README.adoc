@@ -1,0 +1,33 @@
+= Choose your own +++<s>adventure</s>+++ beadando
+
+== Feladatok
+
+=== Task 1
+
+==== A - Styling
+
+==== B - Responsivity
+
+=== Task 2
+
+==== A - Component
+
+==== B - Form validation
+
+=== Task 3
+
+==== A - Pipe
+
+==== B - Translate
+
+=== Task 4
+
+==== A - Directive
+
+==== B - Modal & Image Cropper
+
+=== Task 5
+
+==== A - Tree & Clipboard
+
+==== B - Virtual scrolling
