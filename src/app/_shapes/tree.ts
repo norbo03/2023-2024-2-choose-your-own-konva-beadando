@@ -1,4 +1,5 @@
 import Konva from "konva";
+import {ShapeType} from "../_models/shapes";
 
 export class Tree {
   x: number;
@@ -23,6 +24,7 @@ export class Tree {
   shape(): Konva.Group {
     const group = new Konva.Group({
       draggable: this.draggable,
+      type: ShapeType.TREE
     });
     const body = new Konva.Line({
       points: [

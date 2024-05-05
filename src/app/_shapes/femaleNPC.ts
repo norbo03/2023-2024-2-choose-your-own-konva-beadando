@@ -1,5 +1,5 @@
 import Konva from "konva";
-import {ShapeType} from "@models/shapes";
+import {ShapeType} from "../_models/shapes";
 
 export class FemaleNPC {
   x: number;

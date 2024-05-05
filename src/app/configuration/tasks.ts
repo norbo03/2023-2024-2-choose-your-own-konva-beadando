@@ -276,30 +276,55 @@ Természetesen a layer-ek sorrendjének megváltozásakor ez is forduljon.`,
         {
           text: `Integrálj egy web workert a projektbe, az órai projekt alapján.
 
-A worker és a fő szál tudjon üzeneteken keresztül kommunikálni.`,
-          xp: 2
+A worker és a fő szál tudjon üzeneteken keresztül kommunikálni, az ehhez szükséges
+feliratkozásokat készítsd el.`,
+          xp: 1
+        },
+        {
+          text: `A toolbar-on két grafikus objektum lehelyezésére van lehetőséged: autó és parkoló.
+
+A komponens betöltésekor véletlenszerűen helyezz le 10 autót és 2 parkolót.
+Az autók legyenek mozgathatóak (dragelhetőek), a parkolók viszont ne!
+Ez nyugodtan történhez a fő szálon, nem szükséges a web worker-en implementálni.`,
+          xp: 1
         },
         {
           text: `A fő szál 10 másodpercenként utasítsa a web workert az autók pozíciójának ellenőrzésére.
 
-Amennyiben a worker talál olyan autot, ami 20 pixelnél távolabb van minden parkolótól, akkor kezdje el
-villogtatni azt.
-
-Azaz a kocsi színe fél másodpercenként változzon, egészen addig, amíg a felhasználó be nem mozgatja egy
-parkoló mellé.`,
-          xp: 4
+A web worker minden autóhoz keresse meg a hozzá legközelebbi parkolót.
+Először is rendelj egy véletlenszerű és eltérő színt minden parkolóhoz (10 szín támogatása elegendő).
+A parkoló és minden autó ami hozzá van legközelebb kapjon egy szegélyt (bordert) a parkolóhoz rendelt színnel.`,
+          xp: 3
         },
         {
-          text: `Ha a villogás 10 másodpercnél hosszabb ideig fennáll egy autó esetén, akkor a worker
-helyezzen el az autó közelébe egy parkolót.
+          text: `Grafikus objektum létrehozásakor, törlésekor illetve mozgatásakor utasítsd a web workert, hogy az előző
+          részfeladatban definiált folyamatot futassa le újból.
 
-Ezután a villogásnak - az előző feladatnak megfelelően - abba kell maradnia.`,
+Ennek célja, hogy ha releváns változás történjen akkor ne kelljen megvárni 10 másodperc elteltét a helyes színezés
+életbe lépéséhez.`,
+          xp: 1
+        },
+        {
+          text: `A fentiekről vezess egy statisztikát a Konva stage felett.
+
+A statisztikában két dolgot jeleníts meg:
+- A parkolóhoz rendelt színt
+- Mennyi autó van legközelebb a parkolóhoz
+
+A statisztika legyen csökkenő sorrendbe rendezve az autók száma szerint.
+
+Például:
+#89434F: 6
+#804F04: 5
+#1B2124: 2`,
           xp: 2
         },
         {
-          text: `A web worker által beszúrt parkolók száma jelenjen meg a Konva stage tetején, és frissüljön,
-          akárhányszor egy új parkolót szúr be a worker.
-          A felhasználó által beszúrt parkolók ebbe ne számítsanak be!`,
+          text: `A web worker az ellenőrzés során még nézze meg azt is, hogy mely autók vannak 150 pixelnél távolabb
+          minden parkolótól.
+
+Ezek a parkolók villogjanak (hátterük változzot fél másodpercenként) egészen addig amíg nem "épül" a közelében egy
+parkoló vagy az autót nem mozgatjuk egy már létező parkoló 150 pixeles körzetébe.`,
           xp: 2
         },
       ],
