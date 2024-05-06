@@ -34,7 +34,7 @@ A kiválasztott érték azt határozza meg, hogy mi történjen a Konva stage-re
 (tehát hasonló célt szolgál, mint a toolbar az órai projektben).
 
 Az egyik (az alap) opció az körívek lehelyezésének lehetősége, amit az előző feladatokban implementáltál is.
-A másik pedig egy pont lehelyezése. Erre használhatsz például egy fix színnel kitöltött kört.
+A másik egy pont lehelyezése. Erre használhatsz például fix színnel kitöltött kört.
 
 Ebből a pontból csak egy darab lehessen lehelyezve, tehát ha a felhasználó máshova kattint akkor a már létező
 pont legyen áthelyezve (vagy törölve és újra létrehozva az új pozícióban).`,
@@ -59,7 +59,7 @@ Segítség: https://konvajs.org/docs/groups_and_layers/Groups.html`,
         },
         {
           text: `A körívek legyenek mozgathatóak (azaz dragelhetőek) és a mozgatásukkal automatikusan mozogjanak
-          az élek is, a kapcsolat ne szűjön meg!`,
+          az élek is, a kapcsolat ne szűnjön meg!`,
           xp: 2
         },
         {
@@ -90,14 +90,15 @@ megfelelően változzon is a színe ha szükséges.`,
         {
           text: `A fentiekben felvázolt jelenthez lehessen képet betölteni háttérnek.
 
-A kép feltöltése működhet Drag&Drop-al a fájlrendszerből behúzva, de akár ng-zorro-s fájl választóval is
+A kép feltöltése tetszőleges módon megoldható, működhet Drag&Drop-al a fájlrendszerből behúzva,
+de akár ng-zorro-s fájl választóval is
 (https://ng.ant.design/components/upload/en) is.
 A felhúzott képet feszítsd ki a Stage háttereként.
 Ehhez nyugodtan használj külön layer-t ha segít.
 
 Új háttérkép importálásakor az előző eltávolítható.
 
-A következő képtípusok legyenek támogatottak:
+A következő fájltípusok legyenek támogatottak:
 - JPG
 - BMP
 - SVG`,
@@ -163,7 +164,7 @@ Komplex alakzat esetén (South Park figura) a gyerek alakzatok is látszanak.
 Tehát lenne egy Group típusú elem a fában, aminek lenne például 2 kör, 3 vonal és egy téglalap gyereke.
 
 Segítség: https://ng.ant.design/components/tree/en`,
-          xp: 2
+          xp: 3
         },
         {
           text: `Ha a fa struktúrában rákattintunk egy elemre, akkor a rajzfelületen kerüljön kiválasztásra
@@ -198,10 +199,10 @@ Segítség: https://ng.ant.design/components/modal/en`,
         {
           text: `Ha a felhasználó egy olyan alakzatra kattint amelynek már van neve, akkor a felugró ablakban
           megjelenő input mező értékében a korábbi név szerepeljen és ezáltal legyen lehetőség a nevet módosítani.`,
-          xp: 2
+          xp: 1
         },
         {
-          text: `A név változásakor a baloldali fa struktúrában az alakzat aktuális neve jelenjen meg a típusa
+          text: `A név változása után a baloldali fa struktúrában az alakzat aktuális neve jelenjen meg a típusa
           (vagy az előző neve) helyett.`,
           xp: 1
         },
@@ -307,7 +308,7 @@ Ennek célja, hogy ha releváns változás történik akkor ne kelljen megvárni
 
 A statisztikában két dolgot jeleníts meg:
 - A parkolóhoz rendelt színt
-- Mennyi autó van legközelebb a parkolóhoz
+- Mennyi autó van legközelebb ahhoz a parkolóhoz
 
 A statisztika legyen csökkenő sorrendbe rendezve az autók száma szerint.
 
@@ -325,7 +326,7 @@ Például:
           text: `A web worker az ellenőrzés során még nézze meg azt is, hogy mely autók vannak 150 pixelnél távolabb
           minden parkolótól.
 
-Az ilyen autók villogjanak (hátterük változzot fél másodpercenként) egészen addig amíg nem "épül" a közelében egy
+Az ilyen autók villogjanak (hátterük változzon fél másodpercenként) egészen addig amíg nem "épül" a közelében egy
 parkoló vagy az autót nem mozgatjuk egy már létező parkoló 150 pixeles körzetébe.`,
           xp: 2
         },
