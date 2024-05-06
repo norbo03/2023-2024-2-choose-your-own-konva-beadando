@@ -1,6 +1,5 @@
 import {AfterViewInit, Component, ElementRef} from '@angular/core';
 import Konva from "konva";
-import {Tree} from "../../../_shapes/tree";
 
 @Component({
   selector: 'app-task1-a',

@@ -1,7 +1,7 @@
 export const tasks = [
   {
     A: {
-      imageUrl: 'assets/images/tasks/1/A/rectangle.gif',
+      imageUrl: 'assets/images/tasks/1/A/hypnotoad.gif',
       story: '',
       subTasks: [
         {
@@ -23,18 +23,15 @@ szöggel jelenjenek meg.`,
           xp: 1
         },
         {
-          text: `A slider változtatásával automatikusan módosuljon az összes korábban lehelyezett Arc szöge is.
-
-Fontos, hogy az előző állapot már ne látsszon a rajzfelületen, tehát NE az előző elemek felé rajzold az újakat,
-duplikálva azokat.
-          `,
+          text: `A slider változtatásával automatikusan módosuljon az összes korábban lehelyezett Arc szöge is.`,
           xp: 2
         },
         {
-          text: `Helyezz el gomb stílusú radio választót a felületen:
+          text: `Helyezz el egy radio gombot a felületen:
           https://ng.ant.design/components/radio/en#components-radio-demo-solid
-          A kiválasztott érték azt határozza meg, hogy mi történjen a Konva stage-re kattintáskor
-          (tehát hasonló célt szolgál, mint a toolbar az órai projektben).
+
+A kiválasztott érték azt határozza meg, hogy mi történjen a Konva stage-re kattintáskor
+(tehát hasonló célt szolgál, mint a toolbar az órai projektben).
 
 Az egyik (az alap) opció az körívek lehelyezésének lehetősége, amit az előző feladatokban implementáltál is.
 A másik pedig egy pont lehelyezése. Erre használhatsz például egy fix színnel kitöltött kört.
@@ -55,7 +52,9 @@ Természetesen amennyiben a pont elmozdul, az élek is mozogjanak vele.`,
           jelzi.
 
 Ez a szám frissüljön amikor új körív kerül lehelyezésre.
-A szám egy Group-ban legyen a ponttal, tehát ha a pont mozog, akkor a szám is menjen vele.`,
+A szám egy Group-ban legyen a ponttal, tehát ha a pont mozog, akkor a szám is menjen vele.
+
+Segítség: https://konvajs.org/docs/groups_and_layers/Groups.html`,
           xp: 2
         },
         {
@@ -83,8 +82,8 @@ Ezt folyamatosan számold újra időszakosan (például másodpercenként).`,
           text: `Az előző feladat színezéséhez kapcsolódó számítás időszakos frissítés helyett történjen
           inkább esemény-vezérelten.
 
-Azaz, amikor olyan esemény történik amire a számítás eredménye változhat (például lehelyezésre kerül egy új körív,
-elmozog a pont, stb.) akkor automatikusan kerüljön újból kiszámításra a ponthoz legközelebbi körív és ennek
+Azaz, amikor olyan esemény történik ami a számítás eredményére kihathat (például lehelyezésre kerül egy új körív,
+elmozog a pont, stb.), akkor automatikusan kerüljön újból kiszámításra a ponthoz legközelebbi körív és ennek
 megfelelően változzon is a színe ha szükséges.`,
           xp: 2
         },
@@ -92,11 +91,11 @@ megfelelően változzon is a színe ha szükséges.`,
           text: `A fentiekben felvázolt jelenthez lehessen képet betölteni háttérnek.
 
 A kép feltöltése működhet Drag&Drop-al a fájlrendszerből behúzva, de akár ng-zorro-s fájl választóval is
-https://ng.ant.design/components/upload/en) is.
+(https://ng.ant.design/components/upload/en) is.
 A felhúzott képet feszítsd ki a Stage háttereként.
 Ehhez nyugodtan használj külön layer-t ha segít.
 
-Új háttérkép felhúzásakor az előző eltávolítható.
+Új háttérkép importálásakor az előző eltávolítható.
 
 A következő képtípusok legyenek támogatottak:
 - JPG
@@ -123,7 +122,7 @@ Egy megoldáskezdeményt találhatsz a téglalaphoz segítségként.`,
         },
         {
           text: `A poligon opció egy háromszöget helyezzen el a felületen, azonban legyen lehetőség ezt
-          négyzetté, ötszöggé vagy hatszöggé konvertálni.
+          négyzetté, ötszöggé vagy hatszöggé átalakítani utólag.
 
 Ennek módja úgy nézne ki, hogy a poligonra történő jobbklikk esetén felugrana egy menü a kurzor pozíciójában
 a következő lehetőségekkel (amennyiben még háromszögre kattintunk):
@@ -168,7 +167,7 @@ Segítség: https://ng.ant.design/components/tree/en`,
         },
         {
           text: `Ha a fa struktúrában rákattintunk egy elemre, akkor a rajzfelületen kerüljön kiválasztásra
-          az alakzat, mintha kiválasztó módban rákattintottunk volna.`,
+          a kapcsolódó alakzat, mintha kiválasztó módban rákattintottunk volna.`,
           xp: 1
         },
         {
@@ -251,7 +250,7 @@ az index használatára, mintha még nem is lett volna megadva név (például: 
         {
           text: `A layer neve mellett zárójelben tüntesd fel, hogy hány darab grafikus objektum van az adott layer-en.
 
-Grafikus objektumok hozzáadása és törlése esetén frissüljön ez a szám dinamikusan.`,
+Grafikus objektumok hozzáadása esetén frissüljön ez a szám dinamikusan.`,
           xp: 1
         },
         {
@@ -274,18 +273,17 @@ Természetesen a layer-ek sorrendjének megváltozásakor ez is forduljon.`,
       story: '',
       subTasks: [
         {
-          text: `Integrálj egy web workert a projektbe, az órai projekt alapján.
-
-A worker és a fő szál tudjon üzeneteken keresztül kommunikálni, az ehhez szükséges
-feliratkozásokat készítsd el.`,
-          xp: 1
-        },
-        {
           text: `A toolbar-on két grafikus objektum lehelyezésére van lehetőséged: autó és parkoló.
 
 A komponens betöltésekor véletlenszerűen helyezz le 10 autót és 2 parkolót.
-Az autók legyenek mozgathatóak (dragelhetőek), a parkolók viszont ne!
-Ez nyugodtan történhez a fő szálon, nem szükséges a web worker-en implementálni.`,
+Az autók legyenek mozgathatóak (dragelhetőek), a parkolók viszont ne!`,
+          xp: 1
+        },
+        {
+          text: `Integrálj egy web workert az órai projekt alapján.
+
+A worker és a fő szál tudjon üzeneteken keresztül kommunikálni, az ehhez szükséges
+feliratkozásokat készítsd el.`,
           xp: 1
         },
         {
@@ -297,15 +295,15 @@ A parkoló és minden autó ami hozzá van legközelebb kapjon egy szegélyt (bo
           xp: 3
         },
         {
-          text: `Grafikus objektum létrehozásakor, törlésekor illetve mozgatásakor utasítsd a web workert, hogy az előző
+          text: `Grafikus objektum létrehozásakor illetve mozgatásakor utasítsd a web workert, hogy az előző
           részfeladatban definiált folyamatot futassa le újból.
 
-Ennek célja, hogy ha releváns változás történjen akkor ne kelljen megvárni 10 másodperc elteltét a helyes színezés
-életbe lépéséhez.`,
+Ennek célja, hogy ha releváns változás történik akkor ne kelljen megvárni <10 másodperc elteltét a helyes színezés
+életbe lépéséhez, történjen meg azonnal.`,
           xp: 1
         },
         {
-          text: `A fentiekről vezess egy statisztikát a Konva stage felett.
+          text: `A színezésekről vezess statisztikát a Konva stage felett.
 
 A statisztikában két dolgot jeleníts meg:
 - A parkolóhoz rendelt színt
@@ -314,16 +312,20 @@ A statisztikában két dolgot jeleníts meg:
 A statisztika legyen csökkenő sorrendbe rendezve az autók száma szerint.
 
 Például:
+
 #89434F: 6
+
 #804F04: 5
-#1B2124: 2`,
+
+#1B2124: 2
+`,
           xp: 2
         },
         {
           text: `A web worker az ellenőrzés során még nézze meg azt is, hogy mely autók vannak 150 pixelnél távolabb
           minden parkolótól.
 
-Ezek a parkolók villogjanak (hátterük változzot fél másodpercenként) egészen addig amíg nem "épül" a közelében egy
+Az ilyen autók villogjanak (hátterük változzot fél másodpercenként) egészen addig amíg nem "épül" a közelében egy
 parkoló vagy az autót nem mozgatjuk egy már létező parkoló 150 pixeles körzetébe.`,
           xp: 2
         },
