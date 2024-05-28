@@ -1,1 +1,14 @@
+<nz-card id="konva-toolbar">
+  <nz-slider nzMax="300" nzMin="0"
+             [(ngModel)]="arcAngle"
+             [nzMarks]="sliderMarks"
+             (ngModelChange)="arcAngleChanged($event)"
+  ></nz-slider>
+  <div class="toolbar-button-container">
+    <nz-radio-group [(ngModel)]="selectedShape">
+      <label [nz-radio-button]=true [nzValue]="KonvaMode.ARC">Arc</label>
+      <label [nz-radio-button]=true [nzValue]="KonvaMode.DOT">Center dot</label>
+    </nz-radio-group>
+  </div>
+</nz-card>
 <div id="konva-container"></div>

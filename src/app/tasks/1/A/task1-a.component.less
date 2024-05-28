@@ -1,0 +1,19 @@
+#konva-toolbar {
+  position: absolute;
+  right: 0;
+  width: 240px;
+  z-index: 1000;
+
+  ::ng-deep .ant-card-body {
+    padding: 10px;
+  }
+
+  .toolbar-container {
+    display: flex;
+    gap: 5px;
+
+    > button {
+      flex-grow: 1;
+    }
+  }
+}

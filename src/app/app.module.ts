@@ -24,7 +24,9 @@ import {NzListModule} from "ng-zorro-antd/list";
 import {NzDividerModule} from "ng-zorro-antd/divider";
 import {NzCardModule} from "ng-zorro-antd/card";
 import {NzModalModule} from "ng-zorro-antd/modal";
-
+import {NzSliderComponent} from "ng-zorro-antd/slider";
+import {FormsModule} from "@angular/forms";
+import {NzRadioModule} from 'ng-zorro-antd/radio';
 
 const zorroModules = [
   NzButtonModule,
@@ -34,7 +36,8 @@ const zorroModules = [
   NzLayoutModule,
   NzListModule,
   NzMenuModule,
-  NzModalModule
+  NzModalModule,
+  NzRadioModule
 ]
 
 @NgModule({
@@ -57,6 +60,8 @@ const zorroModules = [
     BrowserAnimationsModule,
     MarkdownModule.forRoot(),
     RouterModule,
+    NzSliderComponent,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
