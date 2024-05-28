@@ -5,7 +5,7 @@ import {ArcNode} from "../../../_shapes/arcNode";
 import {CenterDot} from "../../../_shapes/center";
 import {interval, Subscription} from "rxjs";
 import {ColorService} from "../../../_services/color.service";
-import {DistanceService} from "../../../_services/distance.service";
+import {CoordinateService} from "../../../_services/coordinate.service";
 import {EventService} from "../../../_services/event.service";
 
 @Component({
@@ -28,7 +28,7 @@ export class Task1AComponent implements AfterViewInit, OnDestroy {
 
   constructor(private el: ElementRef,
               private colorService: ColorService,
-              private distanceService: DistanceService,
+              private coordinateService: CoordinateService,
               private eventService: EventService) {
     this.subscription = this.eventService.getEventObservable().subscribe(() => {
       this.highlightClosestArc();
@@ -71,10 +71,9 @@ export class Task1AComponent implements AfterViewInit, OnDestroy {
                   this.drawEdges(this.dot.x()!, this.dot.y()!);
 
                   interval(5000).subscribe(() => {
-                      let x = Math.random() * this.stage?.width()!
-                      let y = Math.random() * this.stage?.height()!
-                      this.dot?.move(x, y, 1)
-                      this.drawEdges(x, y, 1);
+                      let point = this.coordinateService.getRandomPoint(this.stage?.width()!, this.stage?.height()!)
+                      this.dot?.move(point.x, point.y, 1)
+                      this.drawEdges(point.x, point.y, 1);
                       this.eventService.recalculationNeeded();
                     }
                   )
@@ -115,7 +114,7 @@ export class Task1AComponent implements AfterViewInit, OnDestroy {
     let y = this.dot.y()!;
 
     let closest = this.arcs
-      .map((arc) => [arc, this.distanceService.getEuclideanDistance(x, y, arc.x, arc.y)])
+      .map((arc) => [arc, this.coordinateService.getEuclideanDistance(x, y, arc.x, arc.y)])
       .reduce(([closest, d0 ], [current, d1]) =>
         d0 < d1 ? [closest, d0] : [current, d1])[0]
 

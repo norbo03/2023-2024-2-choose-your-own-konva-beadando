@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { DistanceService } from './distance.service';
+import { CoordinateService } from './coordinate.service';
 
 describe('DistanceService', () => {
-  let service: DistanceService;
+  let service: CoordinateService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(DistanceService);
+    service = TestBed.inject(CoordinateService);
   });
 
   it('should be created', () => {
