@@ -1,7 +1,0 @@
-export enum Palette {
-  VIRIDIAN = "#6B9080",
-  CAMBRIDGE_BLUE = "#A4C3B2",
-  MINT_GREEN = "#CCE3DE",
-  TRUE_BLUE = "#4464AD",
-  INDIGO_DYE = "#0C4767",
-}
