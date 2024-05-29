@@ -11,10 +11,14 @@ export class CoordinateService {
     return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
   }
 
+  getDistanceBetweenPoints(p1: Point, p2: Point): number {
+    return this.getEuclideanDistance(p1.x, p1.y, p2.x, p2.y);
+  }
+
   getRandomPoint(w: number, h: number): Point {
     return {
-      x: Math.floor(Math.random() * w),
-      y: Math.floor(Math.random() * h)
+      x: Math.random() * w,
+      y: Math.random() * h
     }
   }
 }

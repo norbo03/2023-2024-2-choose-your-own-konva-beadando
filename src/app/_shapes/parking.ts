@@ -2,13 +2,16 @@ import Konva from "konva";
 import {ShapeType} from "../_models/shapes";
 
 export class ParkingShape {
+  id: string;
   stage: Konva.Stage;
   x: number;
   y: number;
   width: number;
   height: number;
   draggable: boolean;
-  constructor(stage: Konva.Stage, x: number, y: number, width: number, height: number, draggable = false) {
+  borderColor?: string;
+  constructor(id: string, stage: Konva.Stage, x: number, y: number, width: number, height: number, draggable = false) {
+    this.id = id;
     this.stage = stage;
     this.x = x;
     this.y = y;
@@ -31,7 +34,8 @@ export class ParkingShape {
       stroke: 'black',
       strokeWidth: 4,
       draggable: this.draggable,
-      type: ShapeType.PARKING
+      type: ShapeType.PARKING,
+      elementId: `Rect_${this.id}`
     });
   }
 }

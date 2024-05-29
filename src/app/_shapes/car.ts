@@ -2,6 +2,7 @@ import Konva from "konva";
 import {ShapeType} from "../_models/shapes";
 
 export class CarShape {
+  id: string;
   stage: Konva.Stage;
   x: number;
   y: number;
@@ -9,7 +10,8 @@ export class CarShape {
   height: number;
   draggable: boolean;
 
-  constructor(stage: Konva.Stage, x: number, y: number, width: number, height: number, draggable: boolean = true) {
+  constructor(id: string, stage: Konva.Stage, x: number, y: number, width: number, height: number, draggable: boolean = true) {
+    this.id = id;
     this.stage = stage;
     this.x = x;
     this.y = y;
@@ -25,7 +27,8 @@ export class CarShape {
   shape(): Konva.Group {
     const group = new Konva.Group({
       draggable: this.draggable,
-      type: ShapeType.CAR
+      type: ShapeType.CAR,
+      elementId: `Group_${this.id}`
     });
     const body = new Konva.Line({
       points: [
@@ -46,7 +49,8 @@ export class CarShape {
       strokeWidth: 5,
       strokeScaleEnabled: true,
       perfectDrawEnabled: false,
-      shadowForStrokeEnabled: false
+      shadowForStrokeEnabled: false,
+      elementId: `Body_${this.id}`
     });
     const leftTyre = new Konva.Circle({
       x: this.x + this.width / 5,
@@ -54,6 +58,7 @@ export class CarShape {
       radius: this.height / 5,
       stroke: 'black',
       strokeWidth: 5,
+      elementId: `LTyre_${this.id}`
     })
     const rightTyre = new Konva.Circle({
       x: this.x + 4 * this.width / 5,
@@ -61,6 +66,7 @@ export class CarShape {
       radius: this.height / 5,
       stroke: 'black',
       strokeWidth: 5,
+      elementId: `RTyre_${this.id}`
     })
 
     group.add(body, leftTyre, rightTyre)
