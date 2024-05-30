@@ -1,7 +1,9 @@
 import Konva from "konva";
 import {ShapeType} from "../_models/shapes";
+import {Proxy} from "../_interfaces/Proxy";
+import {Car} from "../_models/entities/car";
 
-export class CarShape {
+export class CarShape implements Proxy<Car> {
   id: string;
   stage: Konva.Stage;
   x: number;
@@ -9,6 +11,7 @@ export class CarShape {
   width: number;
   height: number;
   draggable: boolean;
+  shapeGroup?: Konva.Group;
 
   constructor(id: string, stage: Konva.Stage, x: number, y: number, width: number, height: number, draggable: boolean = true) {
     this.id = id;
@@ -20,56 +23,81 @@ export class CarShape {
     this.draggable = draggable;
   }
 
-  draw(layer: Konva.Layer) {
+  draw(layer: Konva.Layer, callback: () => void) {
+    this.shape().on("dragend", () => {
+      if (this.shapeGroup) {
+        this.x = this.shapeGroup.x()!;
+        this.y = this.shapeGroup.y()!;
+        callback();
+      }
+      console.log("Car with id [", this.id, "] has been dragged to x: ", this.shapeGroup?.x(), " y: ", this.shapeGroup?.y());
+    })
     layer.add(this.shape());
   }
 
   shape(): Konva.Group {
-    const group = new Konva.Group({
-      draggable: this.draggable,
-      type: ShapeType.CAR,
-      elementId: `Group_${this.id}`
-    });
-    const body = new Konva.Line({
-      points: [
-        this.x + this.width / 5,
-        this.y,
-        this.x + 4 * this.width / 5,
-        this.y,
-        this.x + this.width,
-        this.y + this.height,
-        this.x,
-        this.y + this.height,
-        this.x + this.width / 5,
-        this.y
-      ],
-      closed: true,
-      fill: 'blue',
-      stroke: 'black',
-      strokeWidth: 5,
-      strokeScaleEnabled: true,
-      perfectDrawEnabled: false,
-      shadowForStrokeEnabled: false,
-      elementId: `Body_${this.id}`
-    });
-    const leftTyre = new Konva.Circle({
-      x: this.x + this.width / 5,
-      y: this.y + this.height,
-      radius: this.height / 5,
-      stroke: 'black',
-      strokeWidth: 5,
-      elementId: `LTyre_${this.id}`
-    })
-    const rightTyre = new Konva.Circle({
-      x: this.x + 4 * this.width / 5,
-      y: this.y + this.height,
-      radius: this.height / 5,
-      stroke: 'black',
-      strokeWidth: 5,
-      elementId: `RTyre_${this.id}`
-    })
+    if (!this.shapeGroup) {
+      const group = new Konva.Group({
+        draggable: this.draggable,
+        type: ShapeType.CAR,
+        elementId: `Car_${this.id}`,
+      });
+      const body = new Konva.Line({
+        points: [
+          this.x + this.width / 5,
+          this.y,
+          this.x + 4 * this.width / 5,
+          this.y,
+          this.x + this.width,
+          this.y + this.height,
+          this.x,
+          this.y + this.height,
+          this.x + this.width / 5,
+          this.y
+        ],
+        closed: true,
+        fill: 'blue',
+        stroke: 'black',
+        strokeWidth: 5,
+        strokeScaleEnabled: true,
+        perfectDrawEnabled: false,
+        shadowForStrokeEnabled: false,
+        elementId: `Body_${this.id}`
+      });
+      const leftTyre = new Konva.Circle({
+        x: this.x + this.width / 5,
+        y: this.y + this.height,
+        radius: this.height / 5,
+        stroke: 'black',
+        strokeWidth: 5,
+        elementId: `LTyre_${this.id}`
+      })
+      const rightTyre = new Konva.Circle({
+        x: this.x + 4 * this.width / 5,
+        y: this.y + this.height,
+        radius: this.height / 5,
+        stroke: 'black',
+        strokeWidth: 5,
+        elementId: `RTyre_${this.id}`
+      })
 
-    group.add(body, leftTyre, rightTyre)
-    return group;
+      group.add(body, leftTyre, rightTyre)
+      this.shapeGroup = group;
+    }
+    return this.shapeGroup;
   }
+
+  toDTO(): Car {
+    return new Car(this.id, {x: this.x, y: this.y})
+  }
+
+  drawBorder(color: string) {
+    this.shapeGroup?.children.forEach((shape) => {
+      if (shape instanceof Konva.Shape) {
+        shape.stroke(color);
+        shape.strokeWidth(5);
+      }
+    });
+  }
+
 }

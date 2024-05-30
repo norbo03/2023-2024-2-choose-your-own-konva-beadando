@@ -1,7 +1,9 @@
 import Konva from "konva";
 import {ShapeType} from "../_models/shapes";
+import {Proxy} from "../_interfaces/Proxy";
+import {Parking} from "../_models/entities/parking";
 
-export class ParkingShape {
+export class ParkingShape implements Proxy<Parking>{
   id: string;
   stage: Konva.Stage;
   x: number;
@@ -9,7 +11,7 @@ export class ParkingShape {
   width: number;
   height: number;
   draggable: boolean;
-  borderColor?: string;
+  rect?: Konva.Rect;
   constructor(id: string, stage: Konva.Stage, x: number, y: number, width: number, height: number, draggable = false) {
     this.id = id;
     this.stage = stage;
@@ -25,7 +27,10 @@ export class ParkingShape {
   }
 
   shape() {
-    return new Konva.Rect({
+    if (this.rect) {
+      return this.rect;
+    }
+    const rect = new Konva.Rect({
       x: this.x,
       y: this.y,
       width: this.width,
@@ -35,7 +40,20 @@ export class ParkingShape {
       strokeWidth: 4,
       draggable: this.draggable,
       type: ShapeType.PARKING,
-      elementId: `Rect_${this.id}`
+      elementId: `Parking_${this.id}`
     });
+
+    this.rect = rect;
+    return rect;
   }
+
+  toDTO(): Parking {
+    return new Parking(this.id, {x: this.x, y: this.y});
+  }
+
+  drawBorder(color: string) {
+    this.rect?.stroke(color);
+    this.rect?.strokeWidth(4);
+  }
+
 }

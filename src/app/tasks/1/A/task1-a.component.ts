@@ -24,11 +24,12 @@ export class Task1AComponent implements AfterViewInit, OnDestroy {
     300: '300°'
   };
   dot?: CenterDot;
-  subscription: Subscription
+  subscription: Subscription;
+
+  colorService: ColorService = new ColorService();
+  coordinateService: CoordinateService = new CoordinateService();
 
   constructor(private el: ElementRef,
-              private colorService: ColorService,
-              private coordinateService: CoordinateService,
               private eventService: EventService) {
     this.subscription = this.eventService.getEventObservable().subscribe(() => {
       this.highlightClosestArc();
@@ -115,23 +116,10 @@ export class Task1AComponent implements AfterViewInit, OnDestroy {
 
     let closest = this.arcs
       .map((arc) => [arc, this.coordinateService.getEuclideanDistance(x, y, arc.x, arc.y)])
-      .reduce(([closest, d0 ], [current, d1]) =>
+      .reduce(([closest, d0], [current, d1]) =>
         d0 < d1 ? [closest, d0] : [current, d1])[0]
 
     this.arcs.forEach((arc) => arc == closest ? arc.highlight("red") : arc.resetColor());
-
-      // let closest = this.arcs[0];
-      // let closestDistance = this.distanceService.getEuclideanDistance(x, y, closest.x, closest.y);
-      // closest.resetColor();
-      // this.arcs.forEach((arc) => {
-      //   arc.resetColor();
-      //   let distance = this.distanceService.getEuclideanDistance(x, y, arc.x, arc.y);
-      //   if (distance < closestDistance) {
-      //     closest = arc;
-      //     closestDistance = distance;
-      //   }
-      // });
-      // closest.highlight("red");
   }
 
 

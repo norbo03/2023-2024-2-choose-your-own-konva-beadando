@@ -1,8 +1,5 @@
-import { Injectable } from '@angular/core';
+import {Point} from "../_interfaces/point";
 
-@Injectable({
-  providedIn: 'root'
-})
 export class CoordinateService {
 
   constructor() { }
@@ -21,9 +18,4 @@ export class CoordinateService {
       y: Math.random() * h
     }
   }
-}
-
-export interface Point {
-  x: number;
-  y: number;
 }

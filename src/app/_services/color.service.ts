@@ -1,8 +1,4 @@
-import { Injectable } from '@angular/core';
 
-@Injectable({
-  providedIn: 'root'
-})
 export class ColorService {
   private pallette = [
     "#6B9080",

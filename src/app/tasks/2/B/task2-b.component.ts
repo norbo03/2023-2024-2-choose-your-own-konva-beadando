@@ -6,6 +6,9 @@ import {ParkingShape} from "../../../_shapes/parking";
 import {IdService} from "../../../_services/id.service";
 import {CoordinateService} from "../../../_services/coordinate.service";
 import {ColorService} from "../../../_services/color.service";
+import {interval} from "rxjs";
+import {CarsClusteredWorkerEvent, CheckCarPositionsEvent, WorkerEventType} from "../../../_models/worker";
+import {Cluster} from "../../../_models/entities/cluster";
 
 @Component({
   selector: 'app-task2-b',
@@ -19,12 +22,12 @@ export class Task2BComponent implements AfterViewInit {
   worker?: Worker;
   cars: CarShape[] = [];
   parkings: ParkingShape[] = [];
+  colorService: ColorService = new ColorService();
+  coordinateService: CoordinateService = new CoordinateService();
 
   Task2BKonvaMode = Task2BKonvaMode;
 
   constructor(private el: ElementRef,
-              private coordinateService: CoordinateService,
-              private colorService: ColorService,
               private idService: IdService) { }
 
   ngAfterViewInit() {
@@ -32,13 +35,22 @@ export class Task2BComponent implements AfterViewInit {
 
     this.worker.onmessage = ( ({data}) => {
       console.log('main thread received a message', data);
+
+      switch (data.type) {
+        case WorkerEventType.CARS_CLUSTERED:
+          console.log('Cars clustered', data);
+          let clusters = (data as CarsClusteredWorkerEvent).clusters;
+          clusters.forEach((cluster) => this.updateBorder(cluster));
+          break;
+        default:
+          console.log('Unknown event', data);
+          break;
+      }
     });
 
     this.worker.onerror = ( (error) => {
       console.log('Error on worker', error);
     })
-
-    this.worker.postMessage('test message');
 
     setTimeout(() => { // Forcing a single change detection cycle delay
       this.stage = new Konva.Stage({
@@ -71,7 +83,8 @@ export class Task2BComponent implements AfterViewInit {
                   true
                 );
                 this.cars.push(car);
-                this.selectedLayer?.add(car.shape());
+                car.draw(this.selectedLayer!, () => this.assignWork());
+                this.assignWork();
                 break;
               case Task2BKonvaMode.PARKING:
                 const parking = new ParkingShape(
@@ -87,7 +100,8 @@ export class Task2BComponent implements AfterViewInit {
                   alert('Isn\'t that a bit much? Maximum parking spots reached!');
                 } else {
                   this.parkings.push(parking);
-                  this.selectedLayer?.add(parking.shape());
+                  parking.draw(this.selectedLayer!);
+                  this.assignWork();
                 }
                 break;
             }
@@ -95,6 +109,7 @@ export class Task2BComponent implements AfterViewInit {
         }
       });
 
+      interval(10000).subscribe(() => this.assignWork());
     });
 
   }
@@ -114,7 +129,7 @@ export class Task2BComponent implements AfterViewInit {
           true
         );
         this.cars.push(car);
-        this.selectedLayer.add(car.shape());
+        car.draw(this.selectedLayer!, () => this.assignWork());
       }
 
       for (let i = 0; i < 2; i++) {
@@ -129,8 +144,29 @@ export class Task2BComponent implements AfterViewInit {
           false
         );
         this.parkings.push(parking);
-        this.selectedLayer.add(parking.shape());
+        parking.draw(this.selectedLayer!);
       }
     }
+  }
+
+  updateBorder(cluster: Cluster) {
+    console.log(this.selectedLayer?.children)
+    let borderColor = cluster.parking.color!;
+    let parking = this.parkings.find((parking) => parking.id === cluster.parking.id)!;
+    parking.drawBorder(borderColor);
+
+    cluster.cars
+      .map(c => this.cars.find((car) => car.id === c.id)!)
+      .forEach((car) => {
+        car.drawBorder(borderColor);
+    });
+  }
+
+  assignWork() {
+    this.worker?.postMessage(new CheckCarPositionsEvent(
+        this.cars.map((car) => car.toDTO()),
+        this.parkings.map((parking) => parking.toDTO())
+      )
+    );
   }
 }
