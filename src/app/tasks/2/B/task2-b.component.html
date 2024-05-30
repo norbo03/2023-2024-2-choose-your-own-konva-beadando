@@ -28,8 +28,32 @@
         <ng-container *ngTemplateOutlet="image"></ng-container>
       </button>
     </ng-template>
-    <ng-container *ngTemplateOutlet="toolbarButtonTemplate; context: { buttonImage: imageCar, mode: Task2BKonvaMode.CAR }"></ng-container>
-    <ng-container *ngTemplateOutlet="toolbarButtonTemplate; context: { buttonImage: imageParking, mode: Task2BKonvaMode.PARKING }"></ng-container>
+    <ng-container
+      *ngTemplateOutlet="toolbarButtonTemplate; context: { buttonImage: imageCar, mode: Task2BKonvaMode.CAR }"></ng-container>
+    <ng-container
+      *ngTemplateOutlet="toolbarButtonTemplate; context: { buttonImage: imageParking, mode: Task2BKonvaMode.PARKING }"></ng-container>
   </div>
 </nz-card>
+
+<div class="statistics">
+  <ng-template #statisticsTemplate
+               let-colorHash="colorHash"
+               let-count="count"
+               let-id="id"
+  >
+    <ng-container>
+      <div class="statistics-item">
+        <div class="parking-statistic">
+          <span class="item-text">Parking Lot #<span class="highlight">{{ id.substring(0, 4) }}</span>: </span>
+          <div class="color-box" [ngStyle]="{'background-color': colorHash}"></div>
+          <span class="item-text">| Cars: <span class="highlight">{{ count }}</span>></span>
+        </div>
+      </div>
+    </ng-container>
+  </ng-template>
+  <ng-template ngFor let-item [ngForOf]="clusters">
+    <ng-container
+      *ngTemplateOutlet="statisticsTemplate; context: { colorHash: item.parking.color, count: item.cars.length, id: item.parking.id }"></ng-container>
+  </ng-template>
+</div>
 <div id="konva-container"></div>

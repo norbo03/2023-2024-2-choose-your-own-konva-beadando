@@ -22,6 +22,7 @@ export class Task2BComponent implements AfterViewInit {
   worker?: Worker;
   cars: CarShape[] = [];
   parkings: ParkingShape[] = [];
+  clusters: Cluster[] = [];
   colorService: ColorService = new ColorService();
   coordinateService: CoordinateService = new CoordinateService();
 
@@ -40,6 +41,8 @@ export class Task2BComponent implements AfterViewInit {
         case WorkerEventType.CARS_CLUSTERED:
           console.log('Cars clustered', data);
           let clusters = (data as CarsClusteredWorkerEvent).clusters;
+
+          this.clusters = clusters.sort((a, b) => b.cars.length - a.cars.length);
           clusters.forEach((cluster) => this.updateBorder(cluster));
           break;
         default:
