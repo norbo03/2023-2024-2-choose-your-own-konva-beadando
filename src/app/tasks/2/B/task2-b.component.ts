@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy} from '@angular/core';
 import Konva from "konva";
 import {Task2BKonvaMode} from "./models/task-2b-mode.model";
 import {CarShape} from "../../../_shapes/car";
@@ -6,16 +6,22 @@ import {ParkingShape} from "../../../_shapes/parking";
 import {IdService} from "../../../_services/id.service";
 import {CoordinateService} from "../../../_services/coordinate.service";
 import {ColorService} from "../../../_services/color.service";
-import {interval} from "rxjs";
-import {CarsClusteredWorkerEvent, CheckCarPositionsEvent, WorkerEventType} from "../../../_models/worker";
+import {interval, Subscription} from "rxjs";
+import {
+  CarsClusteredWorkerEvent,
+  CarsToFlashWorkerEvent,
+  CheckCarPositionsEvent,
+  WorkerEventType
+} from "../../../_models/worker";
 import {Cluster} from "../../../_models/entities/cluster";
+import {Car} from "../../../_models/entities/car";
 
 @Component({
   selector: 'app-task2-b',
   templateUrl: './task2-b.component.html',
   styleUrls: ['./task2-b.component.less']
 })
-export class Task2BComponent implements AfterViewInit {
+export class Task2BComponent implements AfterViewInit, OnDestroy {
   selectedMode: Task2BKonvaMode = Task2BKonvaMode.CAR;
   selectedLayer?: Konva.Layer;
   stage?: Konva.Stage;
@@ -23,27 +29,39 @@ export class Task2BComponent implements AfterViewInit {
   cars: CarShape[] = [];
   parkings: ParkingShape[] = [];
   clusters: Cluster[] = [];
+  flashingCars: Set<CarShape> = new Set<CarShape>();
   colorService: ColorService = new ColorService();
   coordinateService: CoordinateService = new CoordinateService();
+  flashSubscription?: Subscription;
 
   Task2BKonvaMode = Task2BKonvaMode;
 
   constructor(private el: ElementRef,
-              private idService: IdService) { }
+              private idService: IdService) {
+  }
+
+  ngOnDestroy(): void {
+    if (this.flashSubscription) {
+      this.flashSubscription.unsubscribe();
+    }
+  }
 
   ngAfterViewInit() {
     this.worker = new Worker(new URL('src/app/_workers/konva.worker.ts', import.meta.url));
 
-    this.worker.onmessage = ( ({data}) => {
-      console.log('main thread received a message', data);
-
+    this.worker.onmessage = (({data}) => {
       switch (data.type) {
         case WorkerEventType.CARS_CLUSTERED:
-          console.log('Cars clustered', data);
+          console.debug('Cars clustered', data);
           let clusters = (data as CarsClusteredWorkerEvent).clusters;
 
           this.clusters = clusters.sort((a, b) => b.cars.length - a.cars.length);
           clusters.forEach((cluster) => this.updateBorder(cluster));
+          break;
+        case WorkerEventType.CARS_TO_FLASH:
+          console.debug('Cars to flash', data);
+          this.cars.forEach(car => car.setBackgroundColor());
+          this.updateFlashingCars((data as CarsToFlashWorkerEvent).cars);
           break;
         default:
           console.log('Unknown event', data);
@@ -51,7 +69,7 @@ export class Task2BComponent implements AfterViewInit {
       }
     });
 
-    this.worker.onerror = ( (error) => {
+    this.worker.onerror = ((error) => {
       console.log('Error on worker', error);
     })
 
@@ -162,6 +180,36 @@ export class Task2BComponent implements AfterViewInit {
       .map(c => this.cars.find((car) => car.id === c.id)!)
       .forEach((car) => {
         car.drawBorder(borderColor);
+      });
+  }
+
+  updateFlashingCars(cars: Car[]) {
+    this.flashingCars.clear();
+    cars
+      .map(c => this.cars.find((car) => car.id === c.id)!)
+      .forEach((car) => {
+        this.flashingCars.add(car);
+      });
+    this.toggleFlashing();
+  }
+
+  toggleFlashing() {
+    this.flashingCars.forEach((car: CarShape) => {
+      car.setFlashing(false);
+    });
+    if (this.flashSubscription) {
+      this.flashSubscription.unsubscribe();
+    }
+
+    this.flashSubscription = interval(500).subscribe(() => {
+      this.flashingCars.forEach((car: CarShape) => {
+        if (car.isFlashing) {
+          car.setBackgroundColor(car.defaultColor);
+        } else {
+          car.setBackgroundColor(car.flashingColor);
+        }
+        car.setFlashing(!car.isFlashing);
+      });
     });
   }
 

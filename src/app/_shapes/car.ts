@@ -12,6 +12,9 @@ export class CarShape implements Proxy<Car> {
   height: number;
   draggable: boolean;
   shapeGroup?: Konva.Group;
+  defaultColor: string = 'blue';
+  flashingColor: string = 'red';
+  isFlashing: boolean = false;
 
   constructor(id: string, stage: Konva.Stage, x: number, y: number, width: number, height: number, draggable: boolean = true) {
     this.id = id;
@@ -56,7 +59,7 @@ export class CarShape implements Proxy<Car> {
           this.y
         ],
         closed: true,
-        fill: 'blue',
+        fill: this.defaultColor,
         stroke: 'black',
         strokeWidth: 5,
         strokeScaleEnabled: true,
@@ -98,6 +101,18 @@ export class CarShape implements Proxy<Car> {
         shape.strokeWidth(5);
       }
     });
+  }
+
+  setBackgroundColor(color: string = this.defaultColor) {
+    this.shapeGroup?.children.forEach((shape) => {
+      if (shape instanceof Konva.Shape && shape.attrs.elementId == `Body_${this.id}`) {
+        shape.fill(color);
+      }
+    });
+  }
+
+  setFlashing(isFlashing: boolean) {
+    this.isFlashing = isFlashing;
   }
 
 }

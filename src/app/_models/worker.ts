@@ -6,7 +6,8 @@ import {ColorService} from "../_services/color.service";
 
 export enum WorkerEventType {
   CHECK_POSITION = 'CHECK_POSITION',
-  CARS_CLUSTERED = 'CARS_CLUSTERED'
+  CARS_CLUSTERED = 'CARS_CLUSTERED',
+  CARS_TO_FLASH = 'CARS_TO_FLASH',
 }
 
 export class WorkerEvent {
@@ -33,5 +34,13 @@ export class CarsClusteredWorkerEvent extends WorkerEvent {
   constructor(clusters: Cluster[]) {
     super(WorkerEventType.CARS_CLUSTERED);
     this.clusters = clusters;
+  }
+}
+
+export class CarsToFlashWorkerEvent extends WorkerEvent {
+  cars: Car[];
+  constructor(cars: Car[]) {
+    super(WorkerEventType.CARS_TO_FLASH);
+    this.cars = cars;
   }
 }
