@@ -50,7 +50,7 @@ export const configuration = [
         3: true,
         4: true,
         5: true,
-        6: false,
+        6: true,
       }
     },
   },
