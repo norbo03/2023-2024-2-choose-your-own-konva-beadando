@@ -1,20 +1,15 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy } from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy} from '@angular/core';
 import Konva from 'konva';
-import { Task2BKonvaMode } from './models/task-2b-mode.model';
-import { CarShape } from '../../../_shapes/car';
-import { ParkingShape } from '../../../_shapes/parking';
-import { IdService } from '../../../_services/id.service';
-import { CoordinateService } from '../../../_services/coordinate.service';
-import { ColorService } from '../../../_services/color.service';
-import { interval, Subscription } from 'rxjs';
-import {
-  CarsClusteredWorkerEvent,
-  CarsToFlashWorkerEvent,
-  CheckCarPositionsEvent,
-  WorkerEventType
-} from '../../../_models/worker';
-import { Cluster } from '../../../_models/entities/cluster';
-import { Car } from '../../../_models/entities/car';
+import {Task2BKonvaMode} from './models/task-2b-mode.model';
+import {CarShape} from '../../../_shapes/car';
+import {ParkingShape} from '../../../_shapes/parking';
+import {IdService} from '../../../_services/id.service';
+import {CoordinateService} from '../../../_services/coordinate.service';
+import {ColorService} from '../../../_services/color.service';
+import {interval, Subscription} from 'rxjs';
+import {CarsClusteredWorkerEvent, CheckCarPositionsEvent, WorkerEventType} from '../../../_models/worker';
+import {Cluster} from '../../../_models/entities/cluster';
+import {Car} from '../../../_models/entities/car';
 
 @Component({
   selector: 'app-task2-b',
@@ -23,7 +18,7 @@ import { Car } from '../../../_models/entities/car';
 })
 export class Task2BComponent implements AfterViewInit, OnDestroy {
   selectedMode: Task2BKonvaMode = Task2BKonvaMode.CAR;
-  selectedLayer?: Konva.Layer;
+  layer?: Konva.Layer;
   stage?: Konva.Stage;
   worker?: Worker;
   cars: CarShape[] = [];
@@ -49,17 +44,18 @@ export class Task2BComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     this.worker = new Worker(new URL('src/app/_workers/konva.worker.ts', import.meta.url));
 
-    this.worker.onmessage = ({ data }) => {
+    this.worker.onmessage = ({data}) => {
       switch (data.type) {
         case WorkerEventType.CARS_CLUSTERED:
           console.debug('Cars clustered', data);
+          this.resetShapes();
           const clusters = (data as CarsClusteredWorkerEvent).clusters;
           this.clusters = clusters.sort((a, b) => b.cars.length - a.cars.length);
           this.updateBorders(clusters);
           break;
         case WorkerEventType.CARS_TO_FLASH:
-          console.debug('Cars to flash', data);
-          this.updateFlashingCars((data as CarsToFlashWorkerEvent).cars);
+          this.resetShapes();
+          // this.updateFlashingCars((data as CarsToFlashWorkerEvent).cars);
           break;
         default:
           console.log('Unknown event', data);
@@ -71,69 +67,29 @@ export class Task2BComponent implements AfterViewInit, OnDestroy {
       console.log('Error on worker', error);
     };
 
+    this.setupStage();
+
+  }
+
+  setupStage() {
     setTimeout(() => { // Forcing a single change detection cycle delay
       this.stage = new Konva.Stage({
         container: 'konva-container',
         width: this.el.nativeElement.offsetWidth,
         height: 500,
       });
-      const layer1 = new Konva.Layer();
-      const layer2 = new Konva.Layer();
-      this.stage.add(layer1);
-      this.stage.add(layer2);
-
-      this.selectedLayer = this.stage.getLayers()[0];
+      this.layer = new Konva.Layer();
+      this.stage.add(this.layer);
 
       this.initScene();
-
-      this.stage.on('click', (event) => {
-        if (this.stage) {
-          const pointer = this.stage.getPointerPosition();
-          if (pointer && event.target instanceof Konva.Stage) {
-            switch (this.selectedMode) {
-              case Task2BKonvaMode.CAR:
-                const car = new CarShape(
-                  this.idService.generate(),
-                  this.stage,
-                  pointer.x,
-                  pointer.y,
-                  50,
-                  25,
-                  true
-                );
-                this.cars.push(car);
-                car.draw(this.selectedLayer!, () => this.assignWork());
-                this.assignWork();
-                break;
-              case Task2BKonvaMode.PARKING:
-                const parking = new ParkingShape(
-                  this.idService.generate(),
-                  this.stage,
-                  pointer.x,
-                  pointer.y,
-                  50,
-                  50,
-                  false
-                );
-                if (this.parkings.length >= this.colorService.nrOfSupportedColors()) {
-                  alert('Isn\'t that a bit much? Maximum parking spots reached!');
-                } else {
-                  this.parkings.push(parking);
-                  parking.draw(this.selectedLayer!);
-                  this.assignWork();
-                }
-                break;
-            }
-          }
-        }
-      });
+      this.addStageEventListeners();
 
       interval(10000).subscribe(() => this.assignWork());
     });
   }
 
   initScene() {
-    if (this.selectedLayer) {
+    if (this.layer) {
       const offset = 50; // To prevent shapes from being drawn outside the stage
       for (let i = 0; i < 10; i++) {
         const point = this.coordinateService.getRandomPoint(this.stage!.width() - offset, this.stage!.height() - offset);
@@ -147,7 +103,7 @@ export class Task2BComponent implements AfterViewInit, OnDestroy {
           true
         );
         this.cars.push(car);
-        car.draw(this.selectedLayer!, () => this.assignWork());
+        car.draw(this.layer, () => this.assignWork());
       }
 
       for (let i = 0; i < 2; i++) {
@@ -162,24 +118,82 @@ export class Task2BComponent implements AfterViewInit, OnDestroy {
           false
         );
         this.parkings.push(parking);
-        parking.draw(this.selectedLayer!);
+        parking.draw(this.layer);
       }
     }
   }
 
-  updateBorders(clusters: Cluster[]) {
-    this.cars.forEach(car => car.resetBorder());
+  addStageEventListeners() {
+    this.stage?.on('click', (event) => {
+      if (this.stage && this.layer) {
+        const pointer = this.stage.getPointerPosition();
+        if (pointer && event.target instanceof Konva.Stage) {
+          switch (this.selectedMode) {
+            case Task2BKonvaMode.CAR:
+              const car = new CarShape(
+                this.idService.generate(),
+                this.stage,
+                pointer.x,
+                pointer.y,
+                50,
+                25,
+                true
+              );
+              this.cars.push(car);
+              car.draw(this.layer, () => /*this.assignWork()*/ {
+              });
+              this.assignWork();
+              break;
+            case Task2BKonvaMode.PARKING:
+              const parking = new ParkingShape(
+                this.idService.generate(),
+                this.stage,
+                pointer.x,
+                pointer.y,
+                50,
+                50,
+                false
+              );
+              if (this.parkings.length >= this.colorService.nrOfSupportedColors()) {
+                alert('Isn\'t that a bit much? Maximum parking spots reached!');
+              } else {
+                this.parkings.push(parking);
+                parking.draw(this.layer!);
+                this.assignWork();
+              }
+              break;
+          }
+        }
+      }
+    });
 
+    this.stage?.on('dragend', () => this.assignWork())
+  }
+
+  resetShapes() {
+    this.clusters = [];
+    this.parkings.forEach(parking => parking.drawBorder("black"));
+    this.cars.forEach(car => {
+      car.setFlashing(false);
+      car.resetBorder();
+      car.setBackgroundColor(car.defaultColor)
+    });
+  }
+
+  updateBorders(clusters: Cluster[]) {
     clusters.forEach(cluster => {
       const borderColor = cluster.parking.color!;
-      const parking = this.parkings.find(p => p.id === cluster.parking.id)!;
-      parking.drawBorder(borderColor);
+      const parking = this.parkings.find(p => p.id === cluster.parking.id);
+      if (parking) {
+        parking.drawBorder(borderColor);
+      }
 
-      cluster.cars
-        .map(c => this.cars.find(car => car.id === c.id)!)
-        .forEach(car => {
-          car.drawBorder(borderColor);
-        });
+      cluster.cars.forEach(car => {
+        const carShape = this.cars.find(c => c.id === car.id);
+        if (carShape) {
+          carShape.drawBorder(borderColor);
+        }
+      });
     });
   }
 

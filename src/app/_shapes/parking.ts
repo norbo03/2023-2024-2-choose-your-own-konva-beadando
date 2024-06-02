@@ -3,7 +3,7 @@ import {ShapeType} from "../_models/shapes";
 import {Proxy} from "../_interfaces/Proxy";
 import {Parking} from "../_models/entities/parking";
 
-export class ParkingShape implements Proxy<Parking>{
+export class ParkingShape implements Proxy<Parking> {
   id: string;
   stage: Konva.Stage;
   x: number;
@@ -12,6 +12,7 @@ export class ParkingShape implements Proxy<Parking>{
   height: number;
   draggable: boolean;
   rect?: Konva.Rect;
+
   constructor(id: string, stage: Konva.Stage, x: number, y: number, width: number, height: number, draggable = false) {
     this.id = id;
     this.stage = stage;
@@ -48,12 +49,15 @@ export class ParkingShape implements Proxy<Parking>{
   }
 
   toDTO(): Parking {
-    return new Parking(this.id, {x: this.x, y: this.y});
+    // return center of gravity
+    return new Parking(this.id, {x: this.x + this.width / 2, y: this.y + this.height / 2});
   }
 
   drawBorder(color: string) {
-    this.rect?.stroke(color);
-    this.rect?.strokeWidth(4);
+    if (this.rect) {
+      this.rect.stroke(color);
+      this.rect.strokeWidth(4);
+    }
   }
 
 }

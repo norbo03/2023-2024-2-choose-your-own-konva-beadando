@@ -28,13 +28,10 @@ export class CarShape implements Proxy<Car> {
 
   draw(layer: Konva.Layer, callback: () => void) {
     const car = this.shape();
-    car.on("dragend", () => {
-      if (this.shapeGroup) {
-        this.x = this.shapeGroup.position().x;
-        this.y = this.shapeGroup.position().y;
-        callback();
-      }
-      console.log("Car with id [", this.id, "] has been dragged to x: ", this.shapeGroup?.x(), " y: ", this.shapeGroup?.y());
+    car.on("dragend", (event) => {
+      this.x = event.target.x();
+      this.y = event.target.y();
+      callback();
     })
     layer.add(car);
   }
@@ -45,19 +42,41 @@ export class CarShape implements Proxy<Car> {
         draggable: this.draggable,
         type: ShapeType.CAR,
         elementId: `Car_${this.id}`,
+        x: this.x,
+        y: this.y,
       });
+
+      const boundingBox = new Konva.Rect({
+        x: 0,
+        y: 0,
+        width: this.width,
+        height: this.height,
+        stroke: 'red',
+        strokeWidth: 1,
+        dash: [10, 5] // Add a dashed stroke for better visualization
+      });
+
+      const center = new Konva.Circle({
+        x: this.width / 2,
+        y: this.height / 2,
+        radius: this.height / 10,
+        fill: 'red',
+        stroke: 'red',
+        strokeWidth: 5
+      });
+
       const body = new Konva.Line({
         points: [
-          this.x + this.width / 5,
-          this.y,
-          this.x + 4 * this.width / 5,
-          this.y,
-          this.x + this.width,
-          this.y + this.height,
-          this.x,
-          this.y + this.height,
-          this.x + this.width / 5,
-          this.y
+          this.width / 5,
+          0,
+          4 * this.width / 5,
+          0,
+          this.width,
+          this.height,
+          0,
+          this.height,
+          this.width / 5,
+          0
         ],
         closed: true,
         fill: this.defaultColor,
@@ -69,16 +88,16 @@ export class CarShape implements Proxy<Car> {
         elementId: `Body_${this.id}`
       });
       const leftTyre = new Konva.Circle({
-        x: this.x + this.width / 5,
-        y: this.y + this.height,
+        x: this.width / 5,
+        y: this.height,
         radius: this.height / 5,
         stroke: 'black',
         strokeWidth: 5,
         elementId: `LTyre_${this.id}`
       })
       const rightTyre = new Konva.Circle({
-        x: this.x + 4 * this.width / 5,
-        y: this.y + this.height,
+        x: 4 * this.width / 5,
+        y: this.height,
         radius: this.height / 5,
         stroke: 'black',
         strokeWidth: 5,
@@ -86,13 +105,15 @@ export class CarShape implements Proxy<Car> {
       })
 
       group.add(body, leftTyre, rightTyre)
+      group.add(boundingBox, center);
       this.shapeGroup = group;
     }
     return this.shapeGroup;
   }
 
   toDTO(): Car {
-    return new Car(this.id, {x: this.x, y: this.y})
+    // return center of gravity
+    return new Car(this.id, {x: this.x + this.width / 2, y: this.y + this.height / 2});
   }
 
   drawBorder(color: string) {
