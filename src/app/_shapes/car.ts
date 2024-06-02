@@ -46,25 +46,6 @@ export class CarShape implements Proxy<Car> {
         y: this.y,
       });
 
-      const boundingBox = new Konva.Rect({
-        x: 0,
-        y: 0,
-        width: this.width,
-        height: this.height,
-        stroke: 'red',
-        strokeWidth: 1,
-        dash: [10, 5] // Add a dashed stroke for better visualization
-      });
-
-      const center = new Konva.Circle({
-        x: this.width / 2,
-        y: this.height / 2,
-        radius: this.height / 10,
-        fill: 'red',
-        stroke: 'red',
-        strokeWidth: 5
-      });
-
       const body = new Konva.Line({
         points: [
           this.width / 5,
@@ -105,7 +86,6 @@ export class CarShape implements Proxy<Car> {
       })
 
       group.add(body, leftTyre, rightTyre)
-      group.add(boundingBox, center);
       this.shapeGroup = group;
     }
     return this.shapeGroup;
@@ -120,7 +100,7 @@ export class CarShape implements Proxy<Car> {
     this.shapeGroup?.children.forEach((shape) => {
       if (shape instanceof Konva.Shape) {
         shape.stroke(color);
-        shape.strokeWidth(5);
+        shape.strokeWidth(4);
       }
     });
   }

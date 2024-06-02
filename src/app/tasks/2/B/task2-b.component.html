@@ -51,9 +51,11 @@
       </div>
     </ng-container>
   </ng-template>
-  <ng-template ngFor let-item [ngForOf]="clusters">
-    <ng-container
-      *ngTemplateOutlet="statisticsTemplate; context: { colorHash: item.parking.color, count: item.cars.length, id: item.parking.id }"></ng-container>
-  </ng-template>
+  <ng-container class="statistics-content">
+    <ng-template ngFor let-item [ngForOf]="clusters">
+      <ng-container
+        *ngTemplateOutlet="statisticsTemplate; context: { colorHash: item.parking.color, count: item.cars.length, id: item.parking.id }"></ng-container>
+    </ng-template>
+  </ng-container>
 </div>
 <div id="konva-container"></div>

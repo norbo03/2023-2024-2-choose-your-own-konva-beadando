@@ -7,7 +7,12 @@ import {IdService} from '../../../_services/id.service';
 import {CoordinateService} from '../../../_services/coordinate.service';
 import {ColorService} from '../../../_services/color.service';
 import {interval, Subscription} from 'rxjs';
-import {CarsClusteredWorkerEvent, CheckCarPositionsEvent, WorkerEventType} from '../../../_models/worker';
+import {
+  CarsClusteredWorkerEvent,
+  CarsToFlashWorkerEvent,
+  CheckCarPositionsEvent,
+  WorkerEventType
+} from '../../../_models/worker';
 import {Cluster} from '../../../_models/entities/cluster';
 import {Car} from '../../../_models/entities/car';
 
@@ -54,8 +59,8 @@ export class Task2BComponent implements AfterViewInit, OnDestroy {
           this.updateBorders(clusters);
           break;
         case WorkerEventType.CARS_TO_FLASH:
-          this.resetShapes();
-          // this.updateFlashingCars((data as CarsToFlashWorkerEvent).cars);
+          this.flashingCars.clear();
+          this.updateFlashingCars((data as CarsToFlashWorkerEvent).cars);
           break;
         default:
           console.log('Unknown event', data);
@@ -198,23 +203,12 @@ export class Task2BComponent implements AfterViewInit, OnDestroy {
   }
 
   updateFlashingCars(cars: Car[]) {
-    const newFlashingCars = new Set<CarShape>();
-
     cars.forEach(c => {
       const car = this.cars.find(car => car.id === c.id);
       if (car) {
-        newFlashingCars.add(car);
+        this.flashingCars.add(car);
       }
     });
-
-    this.flashingCars.forEach(car => {
-      if (!newFlashingCars.has(car)) {
-        car.setFlashing(false);
-        car.setBackgroundColor();
-      }
-    });
-
-    this.flashingCars = newFlashingCars;
 
     this.toggleFlashing();
   }

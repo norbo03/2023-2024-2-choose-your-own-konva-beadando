@@ -25,23 +25,17 @@ self.onmessage = (event: MessageEvent<WorkerEvent>) => {
       let clusters: Map<string, Cluster> = new Map<string, Cluster>();
       colorService.reset();
 
-      // let flashingCars = cars.filter(car => {
-      //   return !parkings.some(spot => {
-      //     const distance = coordinateService.getDistanceBetweenPoints(spot.position, car.position);
-      //     return distance <= 150;
-      //   })
-      // });
+      let flashingCars = cars.filter(car => !parkings.some(spot =>
+            coordinateService.getDistanceBetweenPoints(spot.position, car.position) <= 150));
 
       parkings.forEach(parking => {
         parking.color = colorService.getDistinctColor();
         clusters.set(parking.id, new Cluster(parking, []));
       })
 
-      cars.forEach(car => {
-        // if (flashingCars.includes(car)) {
-        //   return;
-        // }
-        let closestParking: Parking = parkings
+      cars.filter(car => !flashingCars.includes(car))
+        .forEach(car => {
+          let closestParking: Parking = parkings
             .map(parking => ({
               parking,
               distance: coordinateService.getDistanceBetweenPoints(parking.position, car.position)
@@ -49,13 +43,13 @@ self.onmessage = (event: MessageEvent<WorkerEvent>) => {
             .reduce((closest, current) =>
               current.distance < closest.distance ? current : closest)
             .parking
-        clusters.get(closestParking?.id)?.addCar(car);
-      })
+          clusters.get(closestParking?.id)?.addCar(car);
+        })
 
       postMessage(new CarsClusteredWorkerEvent(Array.from(clusters.values())));
-      // if (flashingCars.length > 0) {
-      //   postMessage(new CarsToFlashWorkerEvent(flashingCars));
-      // }
+      if (flashingCars.length > 0) {
+        postMessage(new CarsToFlashWorkerEvent(flashingCars));
+      }
       break;
     default:
       console.error('Unknown event type', event.data.type);

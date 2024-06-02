@@ -7,7 +7,6 @@ export class ColorService {
     "#4464AD",
     "#0C4767",
     "#00FF00",
-    "#0000FF",
     "#FFFF00",
     "#00FFFF",
     "#FF00FF",
@@ -17,7 +16,6 @@ export class ColorService {
     "#808000",
     "#00FF00",
     "#008080",
-    "#000080",
     "#800080"]
   usedColors: string[] = [];
   constructor() { }

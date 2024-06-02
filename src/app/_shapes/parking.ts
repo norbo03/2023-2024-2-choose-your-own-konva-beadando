@@ -38,7 +38,7 @@ export class ParkingShape implements Proxy<Parking> {
       height: this.height,
       fill: '#00D2FF',
       stroke: 'black',
-      strokeWidth: 4,
+      strokeWidth: 3,
       draggable: this.draggable,
       type: ShapeType.PARKING,
       elementId: `Parking_${this.id}`
