@@ -27,18 +27,19 @@ export class CarShape implements Proxy<Car> {
   }
 
   draw(layer: Konva.Layer, callback: () => void) {
-    this.shape().on("dragend", () => {
+    const car = this.shape();
+    car.on("dragend", () => {
       if (this.shapeGroup) {
-        this.x = this.shapeGroup.x()!;
-        this.y = this.shapeGroup.y()!;
+        this.x = this.shapeGroup.position().x;
+        this.y = this.shapeGroup.position().y;
         callback();
       }
       console.log("Car with id [", this.id, "] has been dragged to x: ", this.shapeGroup?.x(), " y: ", this.shapeGroup?.y());
     })
-    layer.add(this.shape());
+    layer.add(car);
   }
 
-  shape(): Konva.Group {
+  private shape(): Konva.Group {
     if (!this.shapeGroup) {
       const group = new Konva.Group({
         draggable: this.draggable,
@@ -103,6 +104,10 @@ export class CarShape implements Proxy<Car> {
     });
   }
 
+  resetBorder() {
+    this.drawBorder('black');
+  }
+
   setBackgroundColor(color: string = this.defaultColor) {
     this.shapeGroup?.children.forEach((shape) => {
       if (shape instanceof Konva.Shape && shape.attrs.elementId == `Body_${this.id}`) {
@@ -112,6 +117,7 @@ export class CarShape implements Proxy<Car> {
   }
 
   setFlashing(isFlashing: boolean) {
+    this.setBackgroundColor(this.isFlashing ? this.flashingColor : this.defaultColor);
     this.isFlashing = isFlashing;
   }
 
