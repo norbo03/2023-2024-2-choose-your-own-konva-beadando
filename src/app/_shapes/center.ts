@@ -1,11 +1,11 @@
 import Konva from "konva";
-import {EventService} from "../_services/event.service";
+
 export class CenterDot {
   group?: Konva.Group;
   private readonly dot?: Konva.Circle;
   private readonly nrOfArcsTag?: Konva.Text;
 
-  constructor(x: number, y: number, nrOfArcs: number = 0, private eventService: EventService) {
+  constructor(x: number, y: number, nrOfArcs: number = 0) {
     this.group = new Konva.Group({
       x: x,
       y: y,
@@ -43,7 +43,7 @@ export class CenterDot {
     layer?.add(this.group!);
   }
 
-  move(x: number, y: number, duration: number = 0) {
+  move(x: number, y: number, duration: number = 0, callback: () => void /*= () => {}*/) {
     if (this.group) {
       new Konva.Tween({
         node: this.group!,
@@ -51,8 +51,10 @@ export class CenterDot {
         easing: Konva.Easings.EaseInOut,
         x: x,
         y: y,
+        onFinish: () => {
+          callback();
+        }
       }).play();
-      this.eventService.recalculationNeeded();
     }
   }
 

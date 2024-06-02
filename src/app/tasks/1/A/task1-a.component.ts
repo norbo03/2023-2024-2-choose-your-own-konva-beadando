@@ -3,10 +3,9 @@ import Konva from "konva";
 import {DrawOptions} from "../../../_models/drawings";
 import {ArcNode} from "../../../_shapes/arcNode";
 import {CenterDot} from "../../../_shapes/center";
-import {interval, Subscription} from "rxjs";
+import {interval, Subject} from "rxjs";
 import {ColorService} from "../../../_services/color.service";
 import {CoordinateService} from "../../../_services/coordinate.service";
-import {EventService} from "../../../_services/event.service";
 
 @Component({
   selector: 'app-task1-a',
@@ -24,23 +23,26 @@ export class Task1AComponent implements AfterViewInit, OnDestroy {
     300: '300°'
   };
   dot?: CenterDot;
-  subscription: Subscription;
-
+  recalculation = new Subject<void>();
   colorService: ColorService = new ColorService();
   coordinateService: CoordinateService = new CoordinateService();
+  protected readonly KonvaMode = DrawOptions;
 
-  constructor(private el: ElementRef,
-              private eventService: EventService) {
-    this.subscription = this.eventService.getEventObservable().subscribe(() => {
-      this.highlightClosestArc();
-    });
+  constructor(private el: ElementRef) {
   }
 
   ngOnDestroy(): void {
-        this.subscription.unsubscribe();
+    if (this.recalculation) {
+      this.recalculation.unsubscribe();
     }
+  }
 
   ngAfterViewInit() {
+    this.setupStage();
+    this.recalculation.subscribe(() => this.highlightClosestArc())
+  }
+
+  setupStage() {
     setTimeout(() => { // Forcing a single change detection cycle delay
       this.stage = new Konva.Stage({
         container: 'konva-container',
@@ -50,46 +52,56 @@ export class Task1AComponent implements AfterViewInit, OnDestroy {
       this.layer = new Konva.Layer();
       this.stage.add(this.layer);
 
-      this.stage.on('click', (event) => {
-        if (this.stage) {
-          let pointer = this.stage.getPointerPosition();
-          if (pointer && event.target instanceof Konva.Stage) {
-            switch (this.selectedShape) {
-              case DrawOptions.ARC:
-                let arc = new ArcNode(pointer.x, pointer.y, this.arcAngle, this.colorService.getRandom(), this.eventService);
-                this.arcs.push(arc);
-                arc.draw(this.layer);
-                this.dot?.updateTag(this.arcs.length);
-                this.drawEdges(this.dot?.x()!, this.dot?.y()!);
-                break;
-              case DrawOptions.DOT:
-                if (this.dot) {
-                  this.dot.move(pointer.x, pointer.y, 1);
-                  this.drawEdges(pointer.x, pointer.y, 1);
-                } else {
-                  this.dot = new CenterDot(pointer.x, pointer.y, this.arcs.length, this.eventService);
-                  this.dot.draw(this.layer);
-                  this.drawEdges(this.dot.x()!, this.dot.y()!);
+      this.addStageEventListeners();
+    });
+  }
 
-                  interval(5000).subscribe(() => {
-                      let point = this.coordinateService.getRandomPoint(this.stage?.width()!, this.stage?.height()!)
-                      this.dot?.move(point.x, point.y, 1)
-                      this.drawEdges(point.x, point.y, 1);
-                      this.eventService.recalculationNeeded();
-                    }
-                  )
-                  // interval(1000).subscribe(() => this.highlightClosestArc())
-                }
-                break;
-              default:
-                break;
-            }
+  addStageEventListeners() {
+    this.stage!.on('click', (event) => {
+      if (this.stage) {
+        let pointer = this.stage.getPointerPosition();
+        if (pointer && event.target instanceof Konva.Stage) {
+          switch (this.selectedShape) {
+            case DrawOptions.ARC:
+              let arc = new ArcNode(pointer.x, pointer.y, this.arcAngle, this.colorService.getRandom(),
+                () => this.recalculation.next());
+              this.arcs.push(arc);
+              arc.draw(this.layer, () => this.recalculation.next());
+              this.dot?.updateTag(this.arcs.length);
+              this.drawEdges(this.dot?.x()!, this.dot?.y()!);
+              break;
+            case DrawOptions.DOT:
+              if (this.dot) {
+                this.dot.move(pointer.x, pointer.y, 1, () => this.recalculation.next());
+                this.drawEdges(pointer.x, pointer.y, 1);
+              } else {
+                this.initDot(pointer);
+              }
+              break;
+            default:
+              break;
           }
         }
-      });
+      }
+
 
     });
+  }
 
+  initDot(pointer: Konva.Vector2d) {
+    this.dot = new CenterDot(pointer.x, pointer.y, this.arcs.length);
+    this.dot.draw(this.layer);
+    this.drawEdges(this.dot.x()!, this.dot.y()!);
+    this.highlightClosestArc();
+
+    interval(5000).subscribe(() => {
+        let point = this.coordinateService.getRandomPoint(this.stage?.width()!, this.stage?.height()!)
+        this.dot?.move(point.x, point.y, 1, () => this.recalculation.next());
+        this.drawEdges(point.x, point.y, 1);
+        this.recalculation.next();
+      }
+    )
+    // interval(1000).subscribe(() => this.highlightClosestArc())
   }
 
   arcAngleChanged(angle: number) {
@@ -108,7 +120,7 @@ export class Task1AComponent implements AfterViewInit, OnDestroy {
   }
 
   highlightClosestArc() {
-    if (!this.dot) {
+    if (!this.dot || this.arcs.length == 0) {
       return;
     }
     let x = this.dot.x()!;
@@ -121,8 +133,5 @@ export class Task1AComponent implements AfterViewInit, OnDestroy {
 
     this.arcs.forEach((arc) => arc == closest ? arc.highlight("red") : arc.resetColor());
   }
-
-
-  protected readonly KonvaMode = DrawOptions;
 
 }

@@ -1,5 +1,4 @@
 import Konva from "konva";
-import {EventService} from "../_services/event.service";
 
 
 export class ArcNode {
@@ -14,7 +13,7 @@ export class ArcNode {
               y: number,
               angle: number = 270,
               defaultColor: string = 'black',
-              private eventService: EventService) {
+              onMoveCallback: () => void) {
     this.x = x;
     this.y = y;
     this.angle = angle;
@@ -37,7 +36,7 @@ export class ArcNode {
       if (this.edge) {
         this.edge.points()[0] = this.x;
         this.edge.points()[1] = this.y;
-        this.eventService.recalculationNeeded();
+        onMoveCallback();
       }
     })
   }
@@ -47,9 +46,10 @@ export class ArcNode {
     this.arc?.angle(angle);
   }
 
-  draw(layer?: Konva.Layer) {
+  draw(layer?: Konva.Layer, callback: () => void = () => {
+  }) {
     layer?.add(this.arc);
-    this.eventService.recalculationNeeded();
+    callback();
   }
 
   drawEdge(x: number, y: number, layer?: Konva.Layer, duration: number = 0) {
@@ -71,7 +71,7 @@ export class ArcNode {
   }
 
   resetColor() {
-    this.arc.fill(this.defaultColor);
+    this.highlight(this.defaultColor);
   }
 
   highlight(color: string) {
